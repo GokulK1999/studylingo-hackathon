@@ -1,0 +1,83 @@
+.visualizations-container {
+    margin-top: 50px;
+    padding-top: 40px;
+    border-top: 2px solid #f0f0f0;
+  }
+  
+  .visualizations-container h2 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    text-align: center;
+  }
+  
+  .viz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+  }
+  
+  .viz-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s;
+  }
+  
+  .viz-card:hover {
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.15);
+    border-color: #667eea;
+    transform: translateY(-2px);
+  }
+  
+  .viz-card h3 {
+    color: #667eea;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  
+  .chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    overflow-x: auto;
+  }
+  
+  .complexity-gauge {
+    min-height: 200px;
+  }
+  
+  .complexity-desc {
+    text-align: center;
+    color: #666;
+    font-size: 13px;
+    margin-top: 10px;
+    font-style: italic;
+  }
+  
+  /* D3 Chart Styles */
+  .bar {
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  
+  .bar:hover {
+    opacity: 0.8;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .viz-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .chart-container svg {
+      max-width: 100%;
+      height: auto;
+    }
+  }
