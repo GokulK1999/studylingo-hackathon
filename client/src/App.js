@@ -4,6 +4,8 @@ import Visualizations from './Visualizations';
 import StudyBuddy from './StudyBuddy';
 import Toast from './Toast';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+
 function App() {
   const [text, setText] = useState('');
   const [translations, setTranslations] = useState(null);
@@ -12,7 +14,6 @@ function App() {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    // check if user has dark mode preference saved
     const savedMode = localStorage.getItem('darkMode');
     if (savedMode === 'true') {
       setDarkMode(true);
@@ -20,13 +21,11 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // apply dark mode class to body
     if (darkMode) {
       document.body.classList.add('dark-mode');
     } else {
       document.body.classList.remove('dark-mode');
     }
-    // save preference
     localStorage.setItem('darkMode', darkMode);
   }, [darkMode]);
 
@@ -52,7 +51,7 @@ function App() {
     setLoading(true);
     
     try {
-      const response = await fetch('http://localhost:5001/api/translate', {
+      const response = await fetch(`${API_URL}/api/translate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +67,7 @@ function App() {
       showToast('✅ Translation complete!');
     } catch (error) {
       console.error('Error:', error);
-      showToast('❌ Translation failed. Check if backend is running!');
+      showToast('❌ Translation failed. Please try again!');
     } finally {
       setLoading(false);
     }
@@ -145,7 +144,7 @@ function App() {
               translations={translations.translations}
             />
 
-            <StudyBuddy studyText={translations.original} showToast={showToast} />
+            <StudyBuddy studyText={translations.original} showToast={showToast} apiUrl={API_URL} />
           </>
         )}
       </main>

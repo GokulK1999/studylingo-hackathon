@@ -5,7 +5,24 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(cors());
+// CORS configuration for production
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://studylingo.vercel.app',
+  'https://studylingo-hackathon.vercel.app',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all for now
+    }
+  }
+}));
+
 app.use(express.json());
 
 const lingoDotDev = new LingoDotDevEngine({
@@ -14,6 +31,10 @@ const lingoDotDev = new LingoDotDevEngine({
 
 app.get('/', (req, res) => {
   res.json({ message: 'StudyLingo API is running!' });
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'API is healthy' });
 });
 
 app.post('/api/translate', async (req, res) => {
@@ -26,7 +47,6 @@ app.post('/api/translate', async (req, res) => {
       throw new Error('API key not configured');
     }
 
-    // call the lingo translation api
     const translatedTexts = await lingoDotDev.batchLocalizeText(text, {
       sourceLocale: "en",
       targetLocales: targetLanguages,
@@ -34,7 +54,6 @@ app.post('/api/translate', async (req, res) => {
     
     console.log('Translation complete');
     
-    // map the results to language codes
     const translations = {};
     targetLanguages.forEach((lang, index) => {
       translations[lang] = translatedTexts[index];
@@ -55,7 +74,6 @@ app.post('/api/translate', async (req, res) => {
   }
 });
 
-// Study helper endpoint - extracts key concepts
 app.post('/api/study-chat', async (req, res) => {
   try {
     const { question, context } = req.body;
@@ -69,15 +87,12 @@ app.post('/api/study-chat', async (req, res) => {
       });
     }
 
-    // extract a relevant snippet based on the question
     let relevantText = context;
     
-    // if question contains specific words, try to find relevant sentences
     if (question) {
       const questionWords = question.toLowerCase().split(' ');
       const sentences = context.split(/[.!?]+/);
       
-      // find sentences that match question keywords
       const matchingSentences = sentences.filter(sentence => {
         const lowerSentence = sentence.toLowerCase();
         return questionWords.some(word => 
@@ -88,17 +103,14 @@ app.post('/api/study-chat', async (req, res) => {
       if (matchingSentences.length > 0) {
         relevantText = matchingSentences.slice(0, 2).join('. ').trim();
       } else {
-        // just use first few sentences
         relevantText = sentences.slice(0, 2).join('. ').trim();
       }
     }
 
-    // limit length
     if (relevantText.length > 300) {
       relevantText = relevantText.substring(0, 300) + '...';
     }
 
-    // translate the relevant excerpt
     const translatedAnswers = await lingoDotDev.batchLocalizeText(relevantText, {
       sourceLocale: "en",
       targetLocales: ['es', 'fr', 'de', 'zh'],
@@ -128,6 +140,11 @@ app.post('/api/study-chat', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

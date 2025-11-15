@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import './StudyBuddy.css';
 
-function StudyBuddy({ studyText, showToast }) {
+function StudyBuddy({ studyText, showToast, apiUrl }) {
   const [question, setQuestion] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const API_URL = apiUrl || 'http://localhost:5001';
 
   const languageNames = {
     'en': '🇬🇧 English',
@@ -28,7 +30,7 @@ function StudyBuddy({ studyText, showToast }) {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5001/api/study-chat', {
+      const response = await fetch(`${API_URL}/api/study-chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
