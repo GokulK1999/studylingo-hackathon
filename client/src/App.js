@@ -1,11 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
-import Visualizations from './Visualizations';  // Add this line
+import Visualizations from './Visualizations';
+import StudyBuddy from './StudyBuddy';
+import Toast from './Toast';
 
 function App() {
   const [text, setText] = useState('');
   const [translations, setTranslations] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    // check if user has dark mode preference saved
+    const savedMode = localStorage.getItem('darkMode');
+    if (savedMode === 'true') {
+      setDarkMode(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    // apply dark mode class to body
+    if (darkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+    // save preference
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
 
   const languageNames = {
     'es': '🇪🇸 Spanish',
@@ -13,14 +36,16 @@ function App() {
     'de': '🇩🇪 German',
     'zh': '🇨🇳 Chinese',
     'ar': '🇸🇦 Arabic',
-    'ja': '🇯🇵 Japanese',
-    'ko': '🇰🇷 Korean',
-    'pt': '🇵🇹 Portuguese',
+  };
+
+  const showToast = (message) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
   };
 
   const handleTranslate = async () => {
     if (!text.trim()) {
-      alert('Please enter some text to translate');
+      showToast('⚠️ Please enter some text to translate');
       return;
     }
 
@@ -40,19 +65,37 @@ function App() {
 
       const data = await response.json();
       setTranslations(data);
+      showToast('✅ Translation complete!');
     } catch (error) {
       console.error('Error:', error);
-      alert('Translation failed. Make sure backend is running!');
+      showToast('❌ Translation failed. Check if backend is running!');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    showToast('📋 Copied to clipboard!');
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    showToast(darkMode ? '☀️ Light mode activated' : '🌙 Dark mode activated');
+  };
+
   return (
     <div className="App">
       <header className="App-header">
-        <h1>📚 StudyLingo</h1>
-        <p>Learn better through multilingual perspectives</p>
+        <div className="header-content">
+          <div>
+            <h1>📚 StudyLingo</h1>
+            <p>Learn better through multilingual perspectives</p>
+          </div>
+          <button className="dark-mode-toggle" onClick={toggleDarkMode}>
+            {darkMode ? '☀️' : '🌙'}
+          </button>
+        </div>
       </header>
 
       <main className="container">
@@ -88,10 +131,7 @@ function App() {
                     <p className="translated-text">{translatedText}</p>
                     <button 
                       className="copy-btn"
-                      onClick={() => {
-                        navigator.clipboard.writeText(translatedText);
-                        alert('Copied to clipboard!');
-                      }}
+                      onClick={() => handleCopy(translatedText)}
                     >
                       📋 Copy
                     </button>
@@ -100,14 +140,17 @@ function App() {
               </div>
             </div>
 
-            {/* Add Visualizations Component */}
             <Visualizations 
               originalText={translations.original}
               translations={translations.translations}
             />
+
+            <StudyBuddy studyText={translations.original} showToast={showToast} />
           </>
         )}
       </main>
+
+      {toast && <Toast message={toast} onClose={() => setToast(null)} />}
     </div>
   );
 }

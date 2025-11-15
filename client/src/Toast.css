@@ -1,0 +1,51 @@
+.toast-notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    animation: slideInUp 0.3s ease-out;
+    z-index: 1000;
+    font-weight: 500;
+    max-width: 350px;
+  }
+  
+  .toast-notification button {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  
+  .toast-notification button:hover {
+    opacity: 1;
+    transform: none;
+    box-shadow: none;
+  }
+  
+  @keyframes slideInUp {
+    from {
+      transform: translateY(100px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }

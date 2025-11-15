@@ -69,6 +69,46 @@
   .bar:hover {
     opacity: 0.8;
   }
+
+  /* Dark Mode for Visualizations */
+.dark-mode .visualizations-container {
+  border-top-color: #333;
+}
+
+.dark-mode .visualizations-container h2 {
+  color: #e8e8e8;
+}
+
+.dark-mode .viz-card {
+  background: #1a1a2e;
+  border-color: #444;
+}
+
+.dark-mode .viz-card:hover {
+  background: #222;
+  border-color: #667eea;
+}
+
+.dark-mode .viz-card h3 {
+  color: #667eea;
+}
+
+.dark-mode .complexity-desc {
+  color: #b8b8b8;
+}
+
+.dark-mode .chart-container svg {
+  background: transparent !important;
+}
+
+.dark-mode .chart-container text {
+  fill: #e8e8e8 !important;
+}
+
+.dark-mode .chart-container line,
+.dark-mode .chart-container path {
+  stroke: #666 !important;
+}
   
   /* Responsive */
   @media (max-width: 768px) {
